@@ -131,11 +131,11 @@ int procesar_llegadas(int ahora, std::vector<Cola_prioridad> &colas) {
             if (p->espera > 0) {
                 p->quantums.push_back({Tipo_quantum::espera, p->llegada, ahora});
             }
-            /**
-             * \todo En las colas SJF y SRT el proceso que llega se inserta
-             * segun su rafaga, no al final. Usar insertar_por_restante().
-             */
-            c.listos.push_back(p);
+            if (c.estrategia == Estrategia::SRT || c.estrategia == Estrategia::SJF) {
+                insertar_por_restante(c.listos, p);
+            } else {
+                c.listos.push_back(p);
+            }
             total++;
         }
     }
