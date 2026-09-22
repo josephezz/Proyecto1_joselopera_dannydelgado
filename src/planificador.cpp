@@ -35,14 +35,12 @@ std::string en_minusculas(std::string s) {
  * @param p Proceso a insertar
  */
 [[maybe_unused]] void insertar_por_restante(std::deque<Proceso *> &cola, Proceso *p) {
-    /**
-     * \todo Insertar el proceso en la cola de modo que quede ordenada de menor
-     * a mayor tiempo restante. Cuando dos procesos empatan, el que ya estaba
-     * conserva su lugar, de modo que el desempate lo decide el orden de llegada.
-     *
-     * Mientras no este implementado, el proceso entra al final y SJF y SRT se
-     * comportan como FIFO.
-     */
+    for (auto it = cola.begin(); it != cola.end(); ++it){
+        if (p->restante < (*it)->restante){
+            cola.insert(it, p);
+            return;
+        }
+    }
     cola.push_back(p);
 }
 
