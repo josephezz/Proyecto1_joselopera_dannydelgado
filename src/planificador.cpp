@@ -179,17 +179,20 @@ Resultado planificar(std::vector<Proceso> &procesos, std::vector<Cola_prioridad>
         int quantum_asignado = std::min(quantum, actual->restante);
         bool cambiar_de_cola = true;
 
-        /**
-         * \todo Implementar la expropiacion de SRT.
-         *
-         * Si la cola se planifica con SRT y durante este quantum llega un
-         * proceso cuya rafaga es menor que lo que le resta al que se ejecuta,
-         * el proceso actual solo recibe CPU hasta ese instante. En ese caso no
-         * se pasa a la siguiente cola, y al quantum se le descuenta el tiempo
-         * ya consumido.
-         *
-         * Mientras no este implementado, SRT no expropia y se comporta como RR.
-         */
+        if (cola.estrategia == Estrategia::SRT) {
+            for (Proceso *p : cola.llegada) {
+                int tiempo_hasta_llegada = p->llegada - ahora;
+
+                if (tiempo_hasta_llegada >= 0 &&
+                    tiempo_hasta_llegada < quantum_asignado &&
+                    p->ejecucion < actual->restante - tiempo_hasta_llegada) {
+
+                    quantum_asignado = tiempo_hasta_llegada;
+                    cambiar_de_cola = false;
+                    break;
+                }
+            }
+        }
 
         if (traza) {
             std::cerr << "[" << ahora << "] cola " << (pos + 1) << " -> " << actual->nombre
@@ -220,25 +223,16 @@ Resultado planificar(std::vector<Proceso> &procesos, std::vector<Cola_prioridad>
                     cola.listos.push_front(actual);
                     break;
                 case Estrategia::RR:
-                    /**
-                     * \todo El proceso que agota su quantum vuelve al final de
-                     * la cola de listos.
-                     */
-                    cola.listos.push_front(actual);
+                    
+                    cola.listos.push_back(actual);
                     break;
                 case Estrategia::SJF:
-                    /**
-                     * \todo SJF tampoco expropia, de modo que el proceso
-                     * conserva la CPU hasta terminar.
-                     */
+
                     cola.listos.push_front(actual);
                     break;
                 case Estrategia::SRT:
-                    /**
-                     * \todo En SRT el proceso vuelve a la cola ordenado por su
-                     * tiempo restante.
-                     */
-                    cola.listos.push_front(actual);
+                    
+                    insertar_por_restante(cola.listos, actual);
                     break;
             }
         }
