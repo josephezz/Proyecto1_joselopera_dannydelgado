@@ -1,4 +1,4 @@
-# Protecto corte 1
+# Proyecto corte 1
 
 # Integrantes:
 
