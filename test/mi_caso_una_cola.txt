@@ -1,0 +1,13 @@
+define queues 1
+
+define scheduling 1 rr
+define quantum 1 2
+
+process A 0 5 1
+process B 1 3 1
+process C 0 4 1
+process D 2 2 1
+process E 1 6 1
+process F 4 3 1
+
+start
